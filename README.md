@@ -27,7 +27,20 @@ Run the following command in the project root to install the required dependenci
 uv sync
 ```
 
-### 3. Run the Development Server
+### 3. Configure Environment
+
+Create `.env` from `.env.example` and set your Modulate API key:
+
+```bash
+cp .env.example .env
+```
+
+Important environment flags:
+- `MODULATE_MOCK=1`: run locally without real Modulate calls
+- `MODULATE_MOCK=0`: use real Modulate STT APIs
+- `MODULATE_API_KEY`: required when mock mode is off
+
+### 4. Run the Development Server
 
 Start the FastAPI application with live reloading:
 
@@ -39,3 +52,39 @@ The API will be available at:
 - **Health Check:** [http://127.0.0.1:8000/health](http://127.0.0.1:8000/health)
 - **API Documentation (Swagger):** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 - **Sample Endpoint:** [http://127.0.0.1:8000/api/v1/hello/](http://127.0.0.1:8000/api/v1/hello/)
+
+## Voice Loop API
+
+### Start Session
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/voice-loop/sessions/start
+```
+
+### Process Audio (STT -> signals -> LLM stub -> TTS stub)
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/voice-loop/process \
+  -F "audio_file=@/path/to/audio.opus" \
+  -F "session_id=<optional-session-id>"
+```
+
+Response includes:
+- transcript and utterance-level Modulate signals (emotion/accent/language/speaker when available)
+- derived signal bundle (intent, sentiment, risk flags, pace)
+- LLM stub response text
+- base64-encoded WAV audio from TTS stub (`tts_audio_b64`)
+
+### Browser Mic Demo
+
+Open:
+
+`http://127.0.0.1:8000/api/v1/voice-loop/demo`
+
+This page captures mic audio from your device, calls the backend voice loop endpoint, and plays returned audio.
+
+### Fetch Session + Event Log
+
+```bash
+curl http://127.0.0.1:8000/api/v1/voice-loop/sessions/<session-id>
+```
