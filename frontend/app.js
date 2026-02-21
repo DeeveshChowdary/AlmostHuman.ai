@@ -7,6 +7,7 @@ const output = document.getElementById("output");
 const player = document.getElementById("player");
 const assistantTextEl = document.getElementById("assistantText");
 const statusEl = document.getElementById("status");
+const summaryOutputEl = document.getElementById("summaryOutput");
 let currentAudioUrl = null;
 player.muted = false;
 player.volume = 1.0;
@@ -71,8 +72,30 @@ async function startSession() {
 document.getElementById("newSession").onclick = async () => {
   try {
     await startSession();
+    summaryOutputEl.textContent = "No summary generated yet.";
   } catch (err) {
     setStatus(`Session error: ${err}`);
+  }
+};
+
+document.getElementById("summarize").onclick = async () => {
+  try {
+    if (!sessionId) {
+      await startSession();
+    }
+    setStatus("Generating summary...");
+    const response = await fetch(`/api/v1/voice-loop/sessions/${encodeURIComponent(sessionId)}/summary`, {
+      method: "POST",
+    });
+    if (!response.ok) {
+      const failure = await response.json().catch(() => ({}));
+      throw new Error(failure.detail || `HTTP ${response.status}`);
+    }
+    const data = await response.json();
+    summaryOutputEl.textContent = data.summary || "No summary available.";
+    setStatus("Summary generated");
+  } catch (err) {
+    setStatus(`Summary error: ${err}`);
   }
 };
 

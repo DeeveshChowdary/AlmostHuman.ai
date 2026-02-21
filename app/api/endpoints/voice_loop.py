@@ -72,6 +72,15 @@ def get_voice_session(session_id: str) -> dict:
         raise HTTPException(status_code=404, detail=f"Session not found: {session_id}") from None
 
 
+@router.post("/sessions/{session_id}/summary")
+def generate_session_summary(session_id: str) -> dict:
+    try:
+        summary = voice_loop_service.llm_client.generate_session_summary(session_id)
+        return {"session_id": session_id, "summary": summary}
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail=f"Session not found: {session_id}") from None
+
+
 @router.get("/demo")
 def voice_loop_demo() -> FileResponse:
     ui_path = Path(__file__).resolve().parents[3] / "frontend" / "index.html"

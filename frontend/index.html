@@ -34,6 +34,7 @@
         <button id="newSession" class="btn btn-outline">New Session</button>
         <button id="start" class="btn btn-primary">Start Recording</button>
         <button id="stop" class="btn btn-danger" disabled>Stop + Process</button>
+        <button id="summarize" class="btn btn-outline">Generate Summary</button>
       </section>
 
       <section class="panes">
@@ -48,6 +49,11 @@
           <pre id="assistantText">Assistant response will appear here...</pre>
           <p id="status" class="status">Idle</p>
         </article>
+      </section>
+
+      <section class="card pane summary-pane">
+        <h2>Conversation Summary</h2>
+        <pre id="summaryOutput">No summary generated yet.</pre>
       </section>
     </main>
 
