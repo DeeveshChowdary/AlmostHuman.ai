@@ -21,7 +21,7 @@ def _build_service() -> VoiceLoopService:
     session_store = SessionStore(settings.voice_loop_data_dir)
     return VoiceLoopService(
         modulate_client=ModulateClient(settings),
-        llm_client=BlackboxLLMClient(),
+        llm_client=BlackboxLLMClient(session_store),
         tts_client=BlackboxTTSClient(),
         session_store=session_store,
     )
