@@ -42,6 +42,7 @@ class Settings:
     accent_signal: bool = _to_bool(os.getenv("ACCENT_SIGNAL"), default=True)
     pii_phi_tagging: bool = _to_bool(os.getenv("PII_PHI_TAGGING"), default=True)
     voice_loop_data_dir: str = os.getenv("VOICE_LOOP_DATA_DIR", ".data/voice_loop")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "")
 
 
 settings = Settings()

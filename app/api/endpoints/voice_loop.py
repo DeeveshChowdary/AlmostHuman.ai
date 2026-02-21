@@ -73,9 +73,9 @@ def get_voice_session(session_id: str) -> dict:
 
 
 @router.post("/sessions/{session_id}/summary")
-def generate_session_summary(session_id: str) -> dict:
+async def generate_session_summary(session_id: str) -> dict:
     try:
-        summary_payload = voice_loop_service.llm_client.generate_session_summary(session_id)
+        summary_payload = await voice_loop_service.llm_client.generate_session_summary(session_id)
         return {
             "session_id": session_id,
             "summary": summary_payload.get("summary", "No prior context."),

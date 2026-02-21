@@ -1,0 +1,7 @@
+[
+    "Do not assume appointment availability.",
+    "Always confirm date and time before finalizing booking.",
+    "If the user changes their request, discard previous booking attempts.",
+    "Keep responses under 5 sentences unless clarification is needed.",
+    "Do not fabricate policies or business hours."
+]
