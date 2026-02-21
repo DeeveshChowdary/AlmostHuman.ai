@@ -86,6 +86,7 @@ class VoiceLoopProcessResponse(BaseModel):
     llm_response: LLMResponse
     tts_audio_b64: str
     tts_mime_type: str
+    tts_provider: str | None = None
     output_status: str
 
 
@@ -94,4 +95,3 @@ class SessionRecord(BaseModel):
     created_at: str
     updated_at: str
     turns: list[dict[str, Any]] = Field(default_factory=list)
-

@@ -118,6 +118,7 @@ class VoiceLoopService:
             llm_response=llm_response,
             tts_audio_b64=tts_audio_b64,
             tts_mime_type=tts_result.mime_type,
+            tts_provider=tts_result.provider,
             output_status="audio_generated",
         )
 
