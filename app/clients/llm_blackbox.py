@@ -20,13 +20,15 @@ class BlackboxLLMClient:
                 previous_messages.append({"role": "assistant", "content": turn["agent_text"]})
         return previous_messages
 
-    def generate_session_summary(self, session_id: str) -> str:
+    def generate_session_summary(self, session_id: str) -> dict:
         previous_messages = self._build_previous_messages(session_id)
         conversation_state = {
             "summary_generated": False,
             "conversation_summary": "No prior context.",
         }
-        return self.appointment_manager.generate_summary(previous_messages, conversation_state)
+        summary_text = self.appointment_manager.generate_summary(previous_messages, conversation_state)
+        turns_json = self.appointment_manager.messages_as_turn_json(previous_messages)
+        return turns_json
 
     async def generate_response(self, request: LLMRequest) -> LLMResponse:
         previous_messages = self._build_previous_messages(request.session_id)
@@ -40,10 +42,8 @@ class BlackboxLLMClient:
             previous_messages=previous_messages,
             conversation_state=conversation_state,
         )
-
         response = LLMResponse(
             text=result["assistant_output"],
             tool_commands=[],
         )
-        print("response: ", result)
         return response

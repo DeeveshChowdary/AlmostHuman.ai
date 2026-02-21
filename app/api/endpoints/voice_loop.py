@@ -75,8 +75,12 @@ def get_voice_session(session_id: str) -> dict:
 @router.post("/sessions/{session_id}/summary")
 def generate_session_summary(session_id: str) -> dict:
     try:
-        summary = voice_loop_service.llm_client.generate_session_summary(session_id)
-        return {"session_id": session_id, "summary": summary}
+        summary_payload = voice_loop_service.llm_client.generate_session_summary(session_id)
+        return {
+            "session_id": session_id,
+            "summary": summary_payload.get("summary", "No prior context."),
+            "conversation": summary_payload.get("conversation", {"turns": []}),
+        }
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail=f"Session not found: {session_id}") from None
 
