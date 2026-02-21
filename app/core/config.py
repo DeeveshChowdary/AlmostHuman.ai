@@ -21,13 +21,6 @@ class Settings:
     AIRIA_API_KEY_ANALYZER: str = os.getenv("AIRIA_API_KEY")
     modulate_api_key: str = os.getenv("MODULATE_API_KEY", "")
     modulate_base_url: str = os.getenv("MODULATE_BASE_URL", "https://modulate-prototype-apis.com")
-    # Backward-compatible fallback:
-    # - MODULATE_STT_MOCK controls only STT behavior
-    # - MODULATE_MOCK is treated as legacy alias when STT flag is not set
-    modulate_stt_mock: bool = _to_bool(
-        os.getenv("MODULATE_STT_MOCK"),
-        default=_to_bool(os.getenv("MODULATE_MOCK"), default=False),
-    )
     modulate_stt_streaming_path: str = os.getenv(
         "MODULATE_STT_STREAMING_PATH",
         "/api/velma-2-stt-streaming",
@@ -44,10 +37,6 @@ class Settings:
     accent_signal: bool = _to_bool(os.getenv("ACCENT_SIGNAL"), default=True)
     pii_phi_tagging: bool = _to_bool(os.getenv("PII_PHI_TAGGING"), default=True)
     voice_loop_data_dir: str = os.getenv("VOICE_LOOP_DATA_DIR", ".data/voice_loop")
-    mock_transcript_text: str = os.getenv(
-        "MOCK_TRANSCRIPT_TEXT",
-        "Hello, I need to schedule a dentist appointment next Tuesday morning.",
-    )
 
 
 settings = Settings()

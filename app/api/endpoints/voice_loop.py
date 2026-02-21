@@ -40,8 +40,8 @@ async def process_voice_input(
     request: Request,
     session_id: str | None = None,
 ) -> VoiceLoopProcessResponse:
-    if not settings.modulate_stt_mock and not settings.modulate_api_key:
-        raise HTTPException(status_code=400, detail="MODULATE_API_KEY is required when MODULATE_STT_MOCK=0")
+    if not settings.modulate_api_key:
+        raise HTTPException(status_code=400, detail="MODULATE_API_KEY is required")
 
     try:
         audio_bytes = await request.body()

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import logging
-import uuid
 from collections import Counter
 from typing import Any
 from urllib.parse import urlencode
@@ -23,13 +22,8 @@ class ModulateClient:
         self.settings = settings
 
     async def transcribe(self, audio_chunk: bytes, content_type: str, session_id: str) -> TranscriptResult:
-        if self.settings.modulate_stt_mock:
-            return self._mock_transcript()
         if aiohttp is None:
-            raise RuntimeError(
-                "aiohttp is required for real Modulate STT calls. "
-                "Set MODULATE_STT_MOCK=1 for local STT mock mode."
-            )
+            raise RuntimeError("aiohttp is required for real Modulate STT calls.")
 
         if self.settings.stt_prefer_streaming:
             try:
@@ -158,25 +152,6 @@ class ModulateClient:
             utterances=utterances,
             transport="batch",
             raw_provider_payload=payload,
-        )
-
-    def _mock_transcript(self) -> TranscriptResult:
-        utterance = TranscriptUtterance(
-            utterance_uuid=str(uuid.uuid4()),
-            text=self.settings.mock_transcript_text,
-            start_ms=0,
-            duration_ms=4200,
-            speaker=1,
-            language="en",
-            emotion="Neutral",
-            accent="American",
-        )
-        return TranscriptResult(
-            text=self.settings.mock_transcript_text,
-            duration_ms=4200,
-            utterances=[utterance],
-            transport="mock",
-            raw_provider_payload={"mock": True},
         )
 
     def _parse_utterance(self, data: dict[str, Any]) -> TranscriptUtterance:
