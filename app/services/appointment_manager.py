@@ -89,6 +89,40 @@ Instructions:
 Return only the final assistant response.
 """.strip()
 
+    @staticmethod
+    def _extract_response_text(content):
+        if isinstance(content, dict):
+            return str(content.get("response", content))
+        if isinstance(content, str):
+            stripped = content.strip()
+            if stripped.startswith("{") and stripped.endswith("}"):
+                try:
+                    payload = json.loads(stripped)
+                    if isinstance(payload, dict) and "response" in payload:
+                        return str(payload["response"])
+                except json.JSONDecodeError:
+                    pass
+            return stripped
+        return str(content)
+
+    def messages_as_turn_json(self, previous_messages: list[dict]) -> dict:
+        turns = []
+        current_user = None
+        for msg in previous_messages:
+            role = msg.get("role")
+            content = self._extract_response_text(msg.get("content", ""))
+            if role == "user":
+                if current_user is not None:
+                    turns.append({"user": current_user, "assistant": None})
+                current_user = content
+            elif role == "assistant":
+                turns.append({"user": current_user, "assistant": content})
+                current_user = None
+
+        if current_user is not None:
+            turns.append({"user": current_user, "assistant": None})
+        return {"turns": turns}
+
     async def get_improvement_insights(self, transcript_text: str):
         existing_rules = self.load_rules()
         response = await generate_insights_from_transcript(transcript_text, existing_rules)
@@ -162,5 +196,6 @@ Return only the final assistant response.
         return {
             "assistant_output": assistant_output,
             "previous_messages": previous_messages,
-            "conversation_state": conversation_state
+            "conversation_state": conversation_state,
+            "conversation_turns_json": self.messages_as_turn_json(previous_messages),
         }

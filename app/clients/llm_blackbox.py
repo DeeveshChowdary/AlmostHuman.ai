@@ -45,4 +45,5 @@ class BlackboxLLMClient:
             text=result["assistant_output"],
             tool_commands=[],
         )
+        print("response: ", result)
         return response
