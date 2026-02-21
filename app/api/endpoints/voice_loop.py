@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import HTMLResponse
 
 from app.clients.llm_blackbox import BlackboxLLMClient
@@ -37,18 +37,18 @@ def start_voice_session() -> StartSessionResponse:
 
 @router.post("/process", response_model=VoiceLoopProcessResponse)
 async def process_voice_input(
-    audio_file: UploadFile = File(...),
-    session_id: str | None = Form(default=None),
+    request: Request,
+    session_id: str | None = None,
 ) -> VoiceLoopProcessResponse:
     if not settings.modulate_mock and not settings.modulate_api_key:
         raise HTTPException(status_code=400, detail="MODULATE_API_KEY is required when MODULATE_MOCK=0")
 
     try:
-        audio_bytes = await audio_file.read()
+        audio_bytes = await request.body()
         if not audio_bytes:
-            raise HTTPException(status_code=400, detail="audio_file was empty")
+            raise HTTPException(status_code=400, detail="request body was empty")
 
-        content_type = audio_file.content_type or "application/octet-stream"
+        content_type = request.headers.get("content-type", "application/octet-stream")
         return await voice_loop_service.process_audio(
             audio_bytes=audio_bytes,
             content_type=content_type,
@@ -125,14 +125,10 @@ def voice_loop_demo() -> str:
       document.getElementById('stop').onclick = async () => {
         mediaRecorder.onstop = async () => {
           const blob = new Blob(chunks, { type: 'audio/webm' });
-          const file = new File([blob], 'recording.webm', { type: 'audio/webm' });
-          const form = new FormData();
-          form.append('audio_file', file);
-          form.append('session_id', sessionId);
-
-          const response = await fetch('/api/v1/voice-loop/process', {
+          const response = await fetch(`/api/v1/voice-loop/process?session_id=${encodeURIComponent(sessionId)}`, {
             method: 'POST',
-            body: form
+            headers: { 'Content-Type': 'audio/webm' },
+            body: blob
           });
           const data = await response.json();
           document.getElementById('output').innerText = JSON.stringify(data, null, 2);

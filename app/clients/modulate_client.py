@@ -7,12 +7,15 @@ from collections import Counter
 from typing import Any
 from urllib.parse import urlencode
 
-import aiohttp
-
 from app.core.config import Settings
 from app.schemas.voice_loop import EmotionResult, IntentResult, TranscriptResult, TranscriptUtterance
 
 logger = logging.getLogger(__name__)
+
+try:
+    import aiohttp  # type: ignore
+except ImportError:  # pragma: no cover - environment-dependent
+    aiohttp = None
 
 
 class ModulateClient:
@@ -22,6 +25,8 @@ class ModulateClient:
     async def transcribe(self, audio_chunk: bytes, content_type: str, session_id: str) -> TranscriptResult:
         if self.settings.modulate_mock:
             return self._mock_transcript()
+        if aiohttp is None:
+            raise RuntimeError("aiohttp is required for real Modulate STT calls. Set MODULATE_MOCK=1 for local mock mode.")
 
         if self.settings.stt_prefer_streaming:
             try:
@@ -90,7 +95,7 @@ class ModulateClient:
         raw_messages: list[dict[str, Any]] = []
         duration_ms = 0
 
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession() as session:  # type: ignore[union-attr]
             async with session.ws_connect(ws_url_with_query) as ws:
                 for idx in range(0, len(audio_chunk), chunk_size):
                     await ws.send_bytes(audio_chunk[idx : idx + chunk_size])
@@ -123,7 +128,7 @@ class ModulateClient:
     async def _transcribe_batch(self, audio_chunk: bytes, content_type: str, session_id: str) -> TranscriptResult:
         url = self._http_url(self.settings.modulate_stt_batch_path)
         headers = {"X-API-Key": self.settings.modulate_api_key}
-        form = aiohttp.FormData()
+        form = aiohttp.FormData()  # type: ignore[union-attr]
         ext = self._guess_extension(content_type)
         form.add_field(
             "upload_file",
@@ -136,7 +141,7 @@ class ModulateClient:
         form.add_field("accent_signal", str(self.settings.accent_signal).lower())
         form.add_field("pii_phi_tagging", str(self.settings.pii_phi_tagging).lower())
 
-        async with aiohttp.ClientSession() as session:
+        async with aiohttp.ClientSession() as session:  # type: ignore[union-attr]
             async with session.post(url, headers=headers, data=form, timeout=90) as response:
                 response_text = await response.text()
                 if response.status != 200:
@@ -205,4 +210,3 @@ class ModulateClient:
             "application/octet-stream": "opus",
         }
         return mapping.get(content_type or "application/octet-stream", "opus")
-

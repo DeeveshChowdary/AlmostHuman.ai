@@ -65,8 +65,11 @@ curl -X POST http://127.0.0.1:8000/api/v1/voice-loop/sessions/start
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/v1/voice-loop/process \
-  -F "audio_file=@/path/to/audio.opus" \
-  -F "session_id=<optional-session-id>"
+  -H "Content-Type: audio/webm" \
+  --data-binary "@/path/to/audio.webm"
+
+# Optional existing session:
+# http://127.0.0.1:8000/api/v1/voice-loop/process?session_id=<session-id>
 ```
 
 Response includes:
