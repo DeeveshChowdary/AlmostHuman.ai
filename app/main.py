@@ -3,7 +3,10 @@ from dotenv import load_dotenv
 # Load environment variables from .env file before importing app modules.
 load_dotenv()
 
+from pathlib import Path
+
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router as api_router
 from app.core.config import settings
@@ -17,6 +20,9 @@ app = FastAPI(
 
 # Include API routes
 app.include_router(api_router, prefix=settings.api_v1_str)
+frontend_dir = Path(__file__).resolve().parents[1] / "frontend"
+if frontend_dir.exists():
+    app.mount("/frontend", StaticFiles(directory=str(frontend_dir)), name="frontend")
 
 @app.get("/health", tags=["system"])
 def health_check():

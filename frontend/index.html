@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>AlmostHuman Voice Loop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/frontend/styles.css" />
+  </head>
+  <body>
+    <div class="bg-grid"></div>
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+
+    <main class="shell">
+      <section class="hero card">
+        <p class="eyebrow">AlmostHuman.ai</p>
+        <h1>Live Voice Loop</h1>
+        <p class="subtitle">
+          Speak naturally. We transcribe with Modulate STT, run your LLM stub, and speak back with neural TTS.
+        </p>
+        <div class="session-box">
+          <span>Session</span>
+          <code id="sessionValue">not started</code>
+        </div>
+      </section>
+
+      <section class="controls card">
+        <button id="newSession" class="btn btn-outline">New Session</button>
+        <button id="start" class="btn btn-primary">Start Recording</button>
+        <button id="stop" class="btn btn-danger" disabled>Stop + Process</button>
+      </section>
+
+      <section class="panes">
+        <article class="card pane">
+          <h2>Transcript + Signals</h2>
+          <pre id="output">Waiting for voice input...</pre>
+        </article>
+
+        <article class="card pane">
+          <h2>Assistant Speech</h2>
+          <audio id="player" controls></audio>
+          <p id="status" class="status">Idle</p>
+        </article>
+      </section>
+    </main>
+
+    <script src="/frontend/app.js"></script>
+  </body>
+  </html>
+
