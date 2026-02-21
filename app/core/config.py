@@ -18,7 +18,8 @@ class Settings:
     project_name: str = "AlmostHuman.ai API"
     version: str = "0.1.0"
     api_v1_str: str = "/api/v1"
-    AIRIA_API_KEY_ANALYZER: str = os.getenv("AIRIA_API_KEY")
+    AIRIA_API_KEY_ANALYZER: str = os.getenv("AIRIA_API_KEY_ANALYZER")
+    AIRIA_API_KEY: str = os.getenv("AIRIA_API_KEY")
     modulate_api_key: str = os.getenv("MODULATE_API_KEY", "")
     modulate_base_url: str = os.getenv("MODULATE_BASE_URL", "https://modulate-prototype-apis.com")
     modulate_stt_streaming_path: str = os.getenv(

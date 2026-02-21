@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from app.schemas.voice_loop import LLMRequest, LLMResponse
-from app.services.appointment_answers import generate_summary, run_single_turn
 from app.repositories.session_store import SessionStore
+from app.services.appointment_manager import AppointmentManager
 
 class BlackboxLLMClient:
     def __init__(self, session_store: SessionStore):
         self.session_store = session_store
+        self.appointment_manager = AppointmentManager()
+        
     async def generate_response(self, request: LLMRequest) -> LLMResponse:
         session = self.session_store.get_session(request.session_id)
         
@@ -22,11 +24,10 @@ class BlackboxLLMClient:
             "conversation_summary": "No prior context.",
         }
         
-        result = run_single_turn(
+        result = await self.appointment_manager.answer_user(
             transcript_input=request.transcript.text,
             previous_messages=previous_messages,
             conversation_state=conversation_state,
-            system_prompt="",
         )
         
         return LLMResponse(
