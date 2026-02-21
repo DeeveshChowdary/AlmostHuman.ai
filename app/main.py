@@ -1,19 +1,15 @@
-import os
-from dotenv import load_dotenv
 from fastapi import FastAPI
 from app.api.routes import router as api_router
-
-# Load environment variables from .env file
-load_dotenv()
+from app.core.config import settings
 
 app = FastAPI(
-    title="AlmostHuman.ai API",
-    version="0.1.0",
+    title=settings.PROJECT_NAME,
+    version=settings.VERSION,
     description="Basic FastAPI project structure"
 )
 
 # Include API routes
-app.include_router(api_router, prefix="/api/v1")
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/health", tags=["system"])
 def health_check():
