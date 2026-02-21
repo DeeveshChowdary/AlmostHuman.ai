@@ -21,7 +21,13 @@ class Settings:
     AIRIA_API_KEY_ANALYZER: str = os.getenv("AIRIA_API_KEY")
     modulate_api_key: str = os.getenv("MODULATE_API_KEY", "")
     modulate_base_url: str = os.getenv("MODULATE_BASE_URL", "https://modulate-prototype-apis.com")
-    modulate_mock: bool = _to_bool(os.getenv("MODULATE_MOCK"), default=False)
+    # Backward-compatible fallback:
+    # - MODULATE_STT_MOCK controls only STT behavior
+    # - MODULATE_MOCK is treated as legacy alias when STT flag is not set
+    modulate_stt_mock: bool = _to_bool(
+        os.getenv("MODULATE_STT_MOCK"),
+        default=_to_bool(os.getenv("MODULATE_MOCK"), default=False),
+    )
     modulate_stt_streaming_path: str = os.getenv(
         "MODULATE_STT_STREAMING_PATH",
         "/api/velma-2-stt-streaming",

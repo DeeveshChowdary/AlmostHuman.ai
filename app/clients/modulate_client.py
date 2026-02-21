@@ -23,10 +23,13 @@ class ModulateClient:
         self.settings = settings
 
     async def transcribe(self, audio_chunk: bytes, content_type: str, session_id: str) -> TranscriptResult:
-        if self.settings.modulate_mock:
+        if self.settings.modulate_stt_mock:
             return self._mock_transcript()
         if aiohttp is None:
-            raise RuntimeError("aiohttp is required for real Modulate STT calls. Set MODULATE_MOCK=1 for local mock mode.")
+            raise RuntimeError(
+                "aiohttp is required for real Modulate STT calls. "
+                "Set MODULATE_STT_MOCK=1 for local STT mock mode."
+            )
 
         if self.settings.stt_prefer_streaming:
             try:

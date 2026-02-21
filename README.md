@@ -36,9 +36,10 @@ cp .env.example .env
 ```
 
 Important environment flags:
-- `MODULATE_MOCK=1`: run locally without real Modulate calls
-- `MODULATE_MOCK=0`: use real Modulate STT APIs
-- `MODULATE_API_KEY`: required when mock mode is off
+- `MODULATE_STT_MOCK=0`: use real Modulate STT APIs
+- `MODULATE_STT_MOCK=1`: use local STT mock
+- `MODULATE_API_KEY`: required when `MODULATE_STT_MOCK=0`
+- LLM/TTS are already blackbox stubs in current MVP
 
 ### 4. Run the Development Server
 
