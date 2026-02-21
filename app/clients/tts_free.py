@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import logging
 
 from app.core.config import Settings
@@ -20,14 +21,16 @@ class FreeTTSClient:
         self._fallback = BlackboxTTSClient()
 
     async def synthesize_speech(self, text: str, voice: str | None = None) -> TTSResult:
+        normalized_text = self._normalize_text(text)
+
         if edge_tts is None:
             logger.warning("edge-tts not installed; falling back to blackbox TTS stub")
-            return await self._fallback.synthesize_speech(text=text, voice=voice)
+            return await self._fallback.synthesize_speech(text=normalized_text, voice=voice)
 
         selected_voice = voice or self.settings.free_tts_voice
         try:
             communicate = edge_tts.Communicate(
-                text=text,
+                text=normalized_text,
                 voice=selected_voice,
                 rate=self.settings.free_tts_rate,
                 pitch=self.settings.free_tts_pitch,
@@ -50,4 +53,24 @@ class FreeTTSClient:
             )
         except Exception as exc:  # noqa: BLE001
             logger.exception("edge-tts failed; falling back to blackbox TTS stub: %s", exc)
-            return await self._fallback.synthesize_speech(text=text, voice=voice)
+            return await self._fallback.synthesize_speech(text=normalized_text, voice=voice)
+
+    @staticmethod
+    def _normalize_text(text: object) -> str:
+        if isinstance(text, dict):
+            response = text.get("response")
+            return str(response) if response is not None else str(text)
+
+        if isinstance(text, str):
+            stripped = text.strip()
+            if stripped.startswith("{") and stripped.endswith("}"):
+                try:
+                    payload = json.loads(stripped)
+                    if isinstance(payload, dict) and "response" in payload:
+                        response = payload.get("response")
+                        return str(response) if response is not None else stripped
+                except json.JSONDecodeError:
+                    pass
+            return stripped
+
+        return str(text)

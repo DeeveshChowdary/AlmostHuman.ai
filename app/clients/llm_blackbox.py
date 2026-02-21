@@ -38,8 +38,3 @@ class BlackboxLLMClient:
         )
         print(response)
         return response
-        
-        # return LLMResponse(
-        #     text="Thanks for calling. I can help you schedule an appointment. What date and time work best for you?",
-        #     tool_commands=[],
-        # )
