@@ -37,7 +37,8 @@ cp .env.example .env
 
 Important environment flags:
 - `MODULATE_API_KEY`: required for Modulate STT calls
-- LLM/TTS are already blackbox stubs in current MVP
+- LLM is currently a blackbox stub
+- TTS now uses free neural voices via `edge-tts` (`FREE_TTS_*` vars)
 
 ### 4. Run the Development Server
 
@@ -75,7 +76,7 @@ Response includes:
 - transcript and utterance-level Modulate signals (emotion/accent/language/speaker when available)
 - derived signal bundle (intent, sentiment, risk flags, pace)
 - LLM stub response text
-- base64-encoded WAV audio from TTS stub (`tts_audio_b64`)
+- base64-encoded MP3 audio from free TTS (`tts_audio_b64`)
 
 ### Browser Mic Demo
 
