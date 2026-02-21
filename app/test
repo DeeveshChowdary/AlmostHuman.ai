@@ -1,0 +1,7 @@
+current_rules:[]
+conversation: [{"user": "I want to book an appointment"
+},
+{"agent": "Sure, I can help you with that"},
+{"user": I want to book it on next thursday},
+{"agent": "Sorry, I didnt catch that"}
+{"user": "bye"}]
